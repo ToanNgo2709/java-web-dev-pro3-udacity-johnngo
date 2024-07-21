@@ -141,7 +141,6 @@ public class UserController {
     private Employee convertEmployeeDTOToEmployee(EmployeeDTO employeeDTO){
         ModelMapper modelMapper = new ModelMapper();
         Employee employee = modelMapper.map(employeeDTO, Employee.class);
-
         return employee;
     }
 
