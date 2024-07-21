@@ -1,4 +1,8 @@
-run docker-compose up to run MySQL instance
+## Please run
+```
+ docker-compose up
+```
+## to delete the database if you have docker
 
 # Critter Chronologer Project Starter
 
