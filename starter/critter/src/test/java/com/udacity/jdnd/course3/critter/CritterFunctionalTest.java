@@ -194,10 +194,10 @@ public class CritterFunctionalTest {
         petTemp.setOwnerId(customerDTO.getId());
         PetDTO petDTO = petController.savePet(petTemp);
 
-        LocalDate date = LocalDate.of(2019, 12, 25);
+        LocalDate date = LocalDate.of(2024, 07, 20);
         List<Long> petList = Lists.newArrayList(petDTO.getId());
         List<Long> employeeList = Lists.newArrayList(employeeDTO.getId());
-        Set<EmployeeSkill> skillSet =  Sets.newHashSet(EmployeeSkill.PETTING);
+        Set<EmployeeSkill> skillSet =  Sets.newHashSet(EmployeeSkill.PETTING, EmployeeSkill.WALKING, EmployeeSkill.FEEDING);
 
         scheduleController.createSchedule(createScheduleDTO(petList, employeeList, date, skillSet));
         ScheduleDTO scheduleDTO = scheduleController.getAllSchedules().get(0);
