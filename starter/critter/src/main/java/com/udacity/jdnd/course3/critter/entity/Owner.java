@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Owner {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Nationalized

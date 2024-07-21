@@ -85,8 +85,10 @@ public class UserController {
     }
 
     @PutMapping("/employee/{employeeId}")
-    public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
+    public EmployeeDTO setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
         this.userService.updateDaysAvailable(daysAvailable, employeeId);
+        Employee employee = userService.findEmployeeById(employeeId);
+        return userService.convertEmployeeToEmployeeDTO(employee);
     }
 
     @GetMapping("/employee/availability")
