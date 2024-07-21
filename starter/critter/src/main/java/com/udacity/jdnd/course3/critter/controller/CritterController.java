@@ -1,17 +1,16 @@
-package com.udacity.jdnd.course3.critter;
+package com.udacity.jdnd.course3.critter.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Dummy controller class to verify installation success. Do not use for
- * your project work.
- */
 @RestController
+@RequestMapping("/test")
 public class CritterController {
 
-    @GetMapping("/test")
-    public String test(){
+    @GetMapping()
+    public String checkCritterAppStart(){
         return "Critter Starter installed successfully";
     }
+
 }
