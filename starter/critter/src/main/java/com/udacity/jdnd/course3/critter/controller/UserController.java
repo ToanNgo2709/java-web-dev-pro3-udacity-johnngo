@@ -45,10 +45,10 @@ public class UserController {
             }
         }
 
-        Owner owner = convertCustomerDTOToOwner(customerDTO);
+        Owner owner = userService.convertCustomerDTOToOwner(customerDTO);
         owner.setPets(pets);
         Owner savedOwner = userService.saveCustomer(owner);
-        return convertOwnerToCustomerDTO(savedOwner);
+        return userService.convertOwnerToCustomerDTO(savedOwner);
 
     }
 
@@ -57,7 +57,7 @@ public class UserController {
         List<Owner> owners = this.userService.findAllOwners();
         List<CustomerDTO> customerDTOS = new ArrayList<>();
         for(Owner owner : owners){
-            customerDTOS.add(convertOwnerToCustomerDTO(owner));
+            customerDTOS.add(userService.convertOwnerToCustomerDTO(owner));
         }
         return customerDTOS;
     }
@@ -66,14 +66,14 @@ public class UserController {
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
         Pet pet = this.petService.getPetByPetId(petId);
         if(pet.getOwner() != null){
-            return convertOwnerToCustomerDTO(pet.getOwner());
+            return userService.convertOwnerToCustomerDTO(pet.getOwner());
         }
         else throw new UnsupportedOperationException("Apparently the Pet doesn't have an Owner yet!");
     }
 
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        Employee givenEmployee = convertEmployeeDTOToEmployee(employeeDTO);
+        Employee givenEmployee = userService.convertEmployeeDTOToEmployee(employeeDTO);
         Employee savedEmployee = userService.saveEmployee(givenEmployee);
         employeeDTO.setId(savedEmployee.getId());
         return employeeDTO;
@@ -81,7 +81,7 @@ public class UserController {
 
     @GetMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        return convertEmployeeToEmployeeDTO(this.userService.findEmployeeById(employeeId));
+        return userService.convertEmployeeToEmployeeDTO(this.userService.findEmployeeById(employeeId));
     }
 
     @PutMapping("/employee/{employeeId}")
@@ -95,53 +95,14 @@ public class UserController {
         List<EmployeeDTO> employeeDTOS = new ArrayList<>();
 
         for (Employee employee : employees) {
-            employeeDTOS.add(convertEmployeeToEmployeeDTO(employee));
+            employeeDTOS.add(userService.convertEmployeeToEmployeeDTO(employee));
         }
         return employeeDTOS;
     }
 
-    private CustomerDTO convertOwnerToCustomerDTO(Owner owner){
-        CustomerDTO customerDTO = new CustomerDTO();
-        BeanUtils.copyProperties(owner, customerDTO);
-        List<Pet> pets = owner.getPets();
-
-        if (pets != null) {
-            List<Long> petIds = new ArrayList<>();
-
-            for (Pet pet : pets) {
-                petIds.add(pet.getId());
-            }
-            customerDTO.setPetIds(petIds);
-        }
-        return customerDTO;
-    }
-
-    private Owner convertCustomerDTOToOwner(CustomerDTO customerDTO){
-        ModelMapper modelMapper = new ModelMapper();
-        Owner owner = modelMapper.map(customerDTO, Owner.class);
-        List<Long> petIds = customerDTO.getPetIds();
-
-        if (petIds != null) {
-            List<Pet> pets = new ArrayList<Pet>();
-
-            for (Long petId : petIds) {
-                pets.add(petService.getPetByPetId(petId));
-            }
-            owner.setPets(pets);
-        }
-        return owner;
-    }
-
-    private EmployeeDTO convertEmployeeToEmployeeDTO(Employee employee){
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        BeanUtils.copyProperties(employee, employeeDTO);
-        return employeeDTO;
-    }
-
-    private Employee convertEmployeeDTOToEmployee(EmployeeDTO employeeDTO){
-        ModelMapper modelMapper = new ModelMapper();
-        Employee employee = modelMapper.map(employeeDTO, Employee.class);
-        return employee;
+    @DeleteMapping
+    public void delete() {
+        userService.delete();
     }
 
 }

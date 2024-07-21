@@ -7,9 +7,12 @@ import com.udacity.jdnd.course3.critter.service.PetService;
 import com.udacity.jdnd.course3.critter.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles web requests related to Pets.
@@ -32,44 +35,41 @@ public class PetController {
             owner = this.userService.findOwnerById(petDTO.getOwnerId());
         }
 
-        Pet pet = convertPetDTOToPet(petDTO);
+        Pet pet = petService.convertPetDTOToPet(petDTO);
         pet.setOwner(owner);
         Pet savedPet = petService.savePet(pet);
 
         if (owner != null) {
             owner.addPet(savedPet);
         }
-        return convertPetToPetDTO(savedPet);
+        return petService.convertPetToPetDTO(savedPet);
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
-        throw new UnsupportedOperationException();
+        Pet pet;
+        try {
+            pet = petService.getPetByPetId(petId);
+        } catch (Exception exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pet with id: " + petId + " not found", exception);
+        }
+        return petService.convertPetToPetDTO(pet);
     }
 
     @GetMapping
-    public List<PetDTO> getPets(){
-        throw new UnsupportedOperationException();
+    public List<PetDTO> getPets() {
+        List<Pet> pets = petService.findAllPets();
+        return pets.stream().map(pet -> petService.convertPetToPetDTO(pet)).collect(Collectors.toList());
     }
 
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
-        throw new UnsupportedOperationException();
-    }
-
-    private PetDTO convertPetToPetDTO(Pet pet){
-        PetDTO petDTO = new PetDTO();
-        // in order for copyProperties to work, properties of the DTO and normal object must match in name
-        BeanUtils.copyProperties(pet, petDTO);
-        if (pet.getOwner() != null) {
-            petDTO.setOwnerId(pet.getOwner().getId());
+        List<Pet> pets;
+        try {
+            pets = petService.getPetsOfAnOwner(ownerId);
+        } catch (Exception exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Owner pet with id " + ownerId + " not found", exception);
         }
-        return petDTO;
-    }
-
-    private Pet convertPetDTOToPet(PetDTO petDTO){
-        Pet pet = new Pet();
-        BeanUtils.copyProperties(petDTO, pet);
-        return pet;
+        return pets.stream().map(pet -> petService.convertPetToPetDTO(pet)).collect(Collectors.toList());
     }
 }
